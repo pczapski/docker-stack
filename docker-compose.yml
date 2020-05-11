@@ -1,0 +1,55 @@
+version: '2.1'
+services:
+  consul:
+    image: consul:1.7.3
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    ports:
+      - 8500:8500
+    volumes:
+      - ./docker/consul:/consul/config/:rw
+  vault:
+    depends_on:
+      - consul
+    image: vault:1.4.1
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: token
+      VAULT_TOKEN: token
+      VAULT_ADDR: http://127.0.0.1:8200
+    ports:
+      - 8200:8200
+    volumes:
+      - ./docker/vault/config:/vault/config:ro
+      - ./docker/vault/policies:/vault/policies:ro
+      - ./docker/vault/init:/init-data:ro
+    cap_add:
+      - IPC_LOCK
+    command:
+      - server
+      - -dev
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./docker/postgres:/docker-entrypoint-initdb.d:ro
+  keycloak:
+    image: jboss/keycloak
+    command: ["-Djboss.socket.binding.port-offset=10", "-Dkeycloak.import=/data-init/import.json", "-Dkeycloak.profile.feature.upload_scripts=enabled"]
+    volumes:
+      - ./docker/keycloak/init:/data-init:ro
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: "admin"
+      KEYCLOAK_PASSWORD: "admin"
+    ports:
+      - 8090:8090
+    depends_on:
+      -  postgres

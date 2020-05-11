@@ -1,0 +1,38 @@
+version: '2'
+
+tasks:
+  consul:up:
+    desc: run consul
+    cmds:
+      - docker-compose up -d consul
+    silent: true
+  vault:up:
+    deps:
+     - consul:up
+    desc: run vault
+    cmds:
+      - docker-compose up -d vault
+    silent: true
+  postgres:up:
+    deps:
+     - consul:up
+    desc: run postsgres
+    cmds:
+      - docker-compose up -d postgres
+  keycloak:up:
+    deps:
+     - consul:up
+    desc: run keycloak
+    cmds:
+      - docker-compose up -d keycloak
+    silent: true
+  vault:configure-keycloak:
+    deps:
+     - vault:up
+    cmds:
+     - docker-compose exec vault sh /init-data/configure-keycloak.sh
+  vault:configure-approle:
+    deps:
+     - vault:up
+    cmds:
+     - docker-compose exec vault sh /init-data/configure-approle.sh
