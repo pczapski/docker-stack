@@ -6,6 +6,11 @@ tasks:
     cmds:
       - docker-compose up -d consul
     silent: true
+  consul-agent:up:
+    desc: run consul agent
+    cmds:
+      - docker-compose up -d consul-agent
+    silent: true
   vault:up:
     deps:
      - consul:up
@@ -29,6 +34,7 @@ tasks:
   vault:configure-keycloak:
     deps:
      - vault:up
+     - vault:configure-policy
     cmds:
      - docker-compose exec vault sh /init-data/configure-keycloak.sh
   vault:configure-approle:
@@ -47,3 +53,29 @@ tasks:
     desc: run vault
     cmds:
       - docker-compose exec vault  vault read database/creds/app-role
+  vault:configure-pki:
+    deps:
+     - vault:up
+    cmds:
+     - docker-compose exec vault sh /init-data/configure-pki.sh
+  vault:configure-policy:
+    deps:
+     - vault:up
+    cmds:
+     - docker-compose exec vault sh /vault/policies/policy.sh
+  consul:init-kv:
+    deps:
+      - consul:up
+    desc: load seed data to vault
+    cmds:
+     - docker-compose exec consul sh /init-data/init-data.sh
+  api-gateway:up:
+    desc: run example api-server
+    cmds:
+      - docker-compose build api-gateway
+      - docker-compose up -d api-gateway
+  worker:up:
+    desc: run example worker
+    cmds:
+      - docker-compose build worker
+      - docker-compose up -d worker

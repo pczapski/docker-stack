@@ -7,7 +7,8 @@ services:
     ports:
       - 8500:8500
     volumes:
-      - ./docker/consul:/consul/config/:rw
+      - ./docker/consul/config:/consul/config:rw
+      - ./docker/consul/init:/init-data:rw
   vault:
     depends_on:
       - consul
@@ -53,4 +54,34 @@ services:
     ports:
       - 8090:8090
     depends_on:
-      -  postgres
+      - postgres
+  api-gateway:
+    depends_on:
+      - consul-agent
+    build:
+      dockerfile: Dockerfile
+      context: api-gateway
+    environment:
+      CONSUL_HTTP_ADDR: http://consul-agent:8500
+    ports:
+      - 9180:8080
+  consul-agent:
+    depends_on:
+      - consul
+    image: consul:1.7.3
+    volumes:
+      - ./docker/consul-agent:/consul/config/:rw
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    command:
+      - agent
+      - -dev
+      - -retry-join=consul
+  worker:
+    build:
+      dockerfile: Dockerfile
+      context: worker
+    environment:
+      CONSUL_HTTP_ADDR: http://consul-agent:8500
+    depends_on:
+      - consul-agent

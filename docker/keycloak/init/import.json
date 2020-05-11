@@ -11,6 +11,14 @@
     "requiredCredentials": [
         "password"
     ],
+    "groups": [
+        {
+            "name": "users"
+        },
+        {
+            "name": "devops"
+        }
+    ],
     "users": [
         {
             "username": "user",
@@ -26,6 +34,34 @@
             ],
             "realmRoles": [
                 "user"
+            ],
+            "groups": [
+                "users"
+            ],
+            "clientRoles": {
+                "account": [
+                    "view-profile",
+                    "manage-account"
+                ]
+            }
+        },
+        {
+            "username": "devops",
+            "enabled": true,
+            "email": "sample-devops@example",
+            "firstName": "Sample",
+            "lastName": "admin",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "password"
+                }
+            ],
+            "realmRoles": [
+                "admin"
+            ],
+            "groups": [
+                "devops"
             ],
             "clientRoles": {
                 "account": [
@@ -82,20 +118,20 @@
             "frontchannelLogout": false,
             "protocol": "openid-connect",
             "protocolMappers": [
-              {
-                "name": "groups",
-                "protocol": "openid-connect",
-                "protocolMapper": "oidc-usermodel-realm-role-mapper",
-                "consentRequired": false,
-                "config": {
-                  "multivalued": "true",
-                  "user.attribute": "foo",
-                  "id.token.claim": "true",
-                  "access.token.claim": "true",
-                  "claim.name": "groups",
-                  "jsonType.label": "String"
+                {
+                    "name": "groups",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-realm-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "multivalued": "true",
+                        "user.attribute": "foo",
+                        "id.token.claim": "true",
+                        "access.token.claim": "true",
+                        "claim.name": "groups",
+                        "jsonType.label": "String"
+                    }
                 }
-              }
             ]
         }
     ],

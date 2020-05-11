@@ -1,0 +1,32 @@
+{
+    "datacenter": "localhost",
+    "data_dir": "/consul/data/",
+    "log_level": "INFO",
+    "node_name": "agent",
+    "server": false,
+    "client_addr": "0.0.0.0",
+    "bind_addr": "0.0.0.0",
+    "services": [{
+      "name": "postgresql",
+      "address": "postgres",
+      "port": 5432,
+      "checks": [
+        {
+          "tcp": "postgres:5432",
+          "interval": "10s"
+        }
+      ]
+    },
+    {
+      "name": "keycloak",
+      "address": "keycloak",
+      "port": 8090,
+      "checks": [
+        {
+          "tcp": "keycloak:8090",
+          "interval": "10s"
+        }
+      ]
+    }
+    ]
+  }
