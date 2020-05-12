@@ -35,13 +35,21 @@ tasks:
     deps:
      - vault:up
      - vault:configure-policy
+    desc: Configure keycloak
     cmds:
      - docker-compose exec vault sh /init-data/configure-keycloak.sh
   vault:configure-approle:
     deps:
      - vault:up
+    desc: Configure approle
     cmds:
      - docker-compose exec vault sh /init-data/configure-approle.sh
+  vault:configure-example-secrets:
+    deps:
+     - vault:up
+    desc: Configure example secrets
+    cmds:
+     - docker-compose exec vault sh /init-data/configure-example-secrets.sh
   vault:configure-db:
     deps:
      - vault:up
@@ -61,6 +69,7 @@ tasks:
   vault:configure-policy:
     deps:
      - vault:up
+    desc: Configure policy
     cmds:
      - docker-compose exec vault sh /vault/policies/policy.sh
   consul:init-kv:
