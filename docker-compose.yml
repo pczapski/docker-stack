@@ -29,9 +29,10 @@ services:
       - -dev
   postgres:
     image: postgres:12-alpine
+    restart: always
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
+      POSTGRES_USER: vault
       POSTGRES_PASSWORD: password
     volumes:
       - ./docker/postgres:/docker-entrypoint-initdb.d:ro

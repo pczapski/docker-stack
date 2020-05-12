@@ -36,3 +36,14 @@ tasks:
      - vault:up
     cmds:
      - docker-compose exec vault sh /init-data/configure-approle.sh
+  vault:configure-db:
+    deps:
+     - vault:up
+    cmds:
+     - docker-compose exec vault sh /init-data/configure-db.sh
+  vault:db-user:
+    deps:
+     - consul:up
+    desc: run vault
+    cmds:
+      - docker-compose exec vault  vault read database/creds/app-role
